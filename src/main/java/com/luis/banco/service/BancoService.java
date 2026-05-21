@@ -31,7 +31,7 @@ public class BancoService {
     }
 
     // Devuelve el saldo actual de la cuenta indicada.
-    public int verSaldo(String numeroCuenta){
+    public double verSaldo(String numeroCuenta){
         Cuenta cuenta = obtenerCuenta(numeroCuenta);
         return cuenta.getSaldo();
     }
@@ -43,17 +43,19 @@ public class BancoService {
 
         Cuenta cuenta = obtenerCuenta(numeroCuenta);
 
-        if (monto > cuenta.getSaldo()){
-            throw new IllegalArgumentException("Saldo insuficiente");
+        ResultadoRetiro resultado = cajero.retirar(monto);
+
+        if (!resultado.esExitoso()) {
+            return resultado;
         }
 
-        ResultadoRetiro resultado = cajero.retirar(monto);
         cuenta.debitar(monto);
-
-        //Registrar transacción en el historial
-        cuenta.agregarTransaccion(new Transaccion(TipoTransaccion.RETIRO, monto));
-
         return resultado;
+    }
+
+    public void depositar(String numeroCuenta, int monto){
+        Cuenta cuenta = obtenerCuenta(numeroCuenta);
+        cuenta.depositar(monto);
     }
 
     // Busca una cuenta por su número.

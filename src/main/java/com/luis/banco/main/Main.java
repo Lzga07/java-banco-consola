@@ -18,7 +18,7 @@ public class Main {
         Scanner entrada = new Scanner(System.in);
 
         // Cantidad inicial de billetes
-        Cajero cajero = new Cajero(3, 4, 10);
+        Cajero cajero = new Cajero(500, 1000, 5000);
 
         //Creo servicio principal del banco.
         //Actua como capa intermediaria entre el Main y el modelo
@@ -36,7 +36,7 @@ public class Main {
         int opcion;
 
         do {
-            System.out.println("\nBANCO NACION");
+            System.out.println("\n=== SISTEMA BANCARIO ===");
             System.out.println("1 - Ver saldo");
             System.out.println("2 - Retirar");
             System.out.println("3 - Depositar");
@@ -59,8 +59,14 @@ public class Main {
                         System.out.print("Ingrese monto a retirar: ");
                         int monto = entrada.nextInt();
 
-                        //Se ejecuta la operacion de retiro a través del servicio
+                        //Se ejecuta la operación de retiro a través del servicio
                         ResultadoRetiro resultado = bancoService.retirar(numeroCuenta, monto);
+
+                        if (!resultado.esExitoso()) {
+                            System.out.println("ERROR: " + resultado.getMensaje());
+                            break;
+                        }
+
                         System.out.println("Retiro exitoso.");
                         System.out.println("Se entregan: ");
 
@@ -78,7 +84,11 @@ public class Main {
                         break;
 
                     case 3:
-                        System.out.println("Depositar.");
+                        System.out.print("Ingrese monto a depositar: ");
+                        int deposito = entrada.nextInt();
+
+                        bancoService.depositar(numeroCuenta, deposito);
+                        System.out.println("Depósito realizado con éxito.");
                         break;
 
                     case 4:

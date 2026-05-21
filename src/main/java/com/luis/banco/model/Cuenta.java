@@ -7,7 +7,7 @@ import java.util.List;
 // Administra el saldo actual y el historial de transacciones realizadas
 public class Cuenta {
 
-    private int saldo;
+    private double saldo;
 
     private List<Transaccion> historial;
 
@@ -22,7 +22,7 @@ public class Cuenta {
     }
 
     // Devuelve el saldo actual de la cuenta.
-    public int getSaldo(){
+    public double getSaldo(){
         return saldo;
     }
 
@@ -38,6 +38,7 @@ public class Cuenta {
         }
 
         saldo -= monto;
+        historial.add(new Transaccion(TipoTransaccion.RETIRO,monto));
     }
 
     // Realiza un depósito en la cuenta.
@@ -48,6 +49,7 @@ public class Cuenta {
         }
 
         saldo += monto;
+        historial.add(new Transaccion(TipoTransaccion.DEPOSITO,monto));
     }
 
     // Agrega una transacción al historial de la cuenta.
@@ -57,6 +59,6 @@ public class Cuenta {
 
     // Devuelve la lista de transacciones realizadas.
     public List<Transaccion> getHistorial(){
-        return historial;
+        return List.copyOf(historial);
     }
 }

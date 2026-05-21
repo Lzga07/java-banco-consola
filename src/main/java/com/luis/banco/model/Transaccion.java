@@ -7,13 +7,21 @@ import java.time.format.DateTimeFormatter;
 // Guarda el tipo (depósito o retiro), el monto y la fecha en que se realizó.
 public class Transaccion {
 
-    private TipoTransaccion tipo;
-    private int monto;
-    private LocalDateTime fecha;
+    private final TipoTransaccion tipo;
+    private final int monto;
+    private final LocalDateTime fecha;
 
     // Crea una nueva transacción con el tipo y monto indicados.
     // La fecha se asigna automáticamente al momento de creación.
     public Transaccion(TipoTransaccion tipo, int monto){
+        if (tipo == null) {
+            throw new IllegalArgumentException("El tipo de transacción no puede ser nulo");
+        }
+
+        if (monto <= 0) {
+            throw new IllegalArgumentException("El monto debe ser mayor a cero");
+        }
+
         this.tipo = tipo;
         this.monto = monto;
         this.fecha = LocalDateTime.now();
@@ -39,6 +47,6 @@ public class Transaccion {
     @Override
     public String toString(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        return fecha.format(formatter) + " - " + tipo + " - $" + monto;
+        return "[" + fecha.format(formatter) + "] " + tipo + " -> $" + monto;
     }
 }
