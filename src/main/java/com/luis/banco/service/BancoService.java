@@ -5,6 +5,7 @@ import com.luis.banco.model.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 // Servicio que administra las operaciones del banco.
 // Permite crear cuentas, consultar saldo, retirar dinero
@@ -58,6 +59,19 @@ public class BancoService {
         cuenta.depositar(monto);
     }
 
+    public void transferir(String origen, String destino, int monto){
+
+        if (origen.equals(destino)){
+            throw new IllegalArgumentException("No se puede transferir a la misma cuenta");
+        }
+
+        Cuenta cuentaOrigen = obtenerCuenta(origen);
+        Cuenta cuentaDestino = obtenerCuenta(destino);
+
+        cuentaOrigen.debitar(monto);
+        cuentaDestino.depositar(monto);
+    }
+
     // Busca una cuenta por su número.
     // Lanza excepción si no existe.
     private Cuenta obtenerCuenta(String numeroCuenta){
@@ -68,6 +82,14 @@ public class BancoService {
         }
 
         return cuenta;
+    }
+
+    public Set<String> obtenerCuentas(){
+        return cuentas.keySet();
+    }
+
+    public boolean existeCuenta(String numeroCuenta){
+        return cuentas.containsKey(numeroCuenta);
     }
 
     // Devuelve el historial de transacciones de la cuenta.

@@ -24,23 +24,24 @@ public class Main {
         //Actua como capa intermediaria entre el Main y el modelo
         BancoService bancoService = new BancoService(cajero);
 
-        System.out.print("Ingrese número de cuenta: ");
-        String numeroCuenta = entrada.next();
-
-        System.out.print("Ingrese saldo inicial: ");
-        int saldoInicial = entrada.nextInt();
-
-        //Se crea la cuenta dentro del sistema
-        bancoService.crearCuenta(numeroCuenta, saldoInicial);
+        //Creo cuenta para prueba
+        bancoService.crearCuenta("4545", 25000);
+        String cuentaActual = "4545";
 
         int opcion;
 
         do {
             System.out.println("\n=== SISTEMA BANCARIO ===");
+            System.out.println("Cuenta actual: " + cuentaActual);
+            System.out.println();
             System.out.println("1 - Ver saldo");
             System.out.println("2 - Retirar");
             System.out.println("3 - Depositar");
-            System.out.println("4 - Ver Historial");
+            System.out.println("4 - Transferir");
+            System.out.println("5 - Ver Historial");
+            System.out.println("6 - Crear cuenta");
+            System.out.println("7 - Cambiar cuenta");
+            System.out.println("8 - Listar cuentas");
             System.out.println("0 - Salir");
             System.out.print("Ingrese opción: ");
             opcion = entrada.nextInt();
@@ -52,7 +53,7 @@ public class Main {
 
                     case 1:
                         //Comsulta de saldo, encargado por BancoService
-                        System.out.println("Saldo actual: $" + bancoService.verSaldo(numeroCuenta));
+                        System.out.println("Saldo actual: $" + bancoService.verSaldo(cuentaActual));
                         break;
 
                     case 2:
@@ -60,7 +61,7 @@ public class Main {
                         int monto = entrada.nextInt();
 
                         //Se ejecuta la operación de retiro a través del servicio
-                        ResultadoRetiro resultado = bancoService.retirar(numeroCuenta, monto);
+                        ResultadoRetiro resultado = bancoService.retirar(cuentaActual, monto);
 
                         if (!resultado.esExitoso()) {
                             System.out.println("ERROR: " + resultado.getMensaje());
@@ -87,14 +88,24 @@ public class Main {
                         System.out.print("Ingrese monto a depositar: ");
                         int deposito = entrada.nextInt();
 
-                        bancoService.depositar(numeroCuenta, deposito);
+                        bancoService.depositar(cuentaActual, deposito);
                         System.out.println("Depósito realizado con éxito.");
                         break;
-
                     case 4:
+                        System.out.print("Ingrese cuenta destino: ");
+                        String cuentaDestino = entrada.next();
+
+                        System.out.print("Ingrese monto a transferir: ");
+                        int montoTransferencia = entrada.nextInt();
+
+                        bancoService.transferir(cuentaActual, cuentaDestino, montoTransferencia);
+
+                        System.out.println("Transferencia realizada con éxito.");
+                        break;
+                    case 5:
                         // Consulta historial transacciones
                         // Se obtiene la lista desde el BancoService. Mantiene encapsulamiento
-                        List<Transaccion> historial = bancoService.obtenerHistorial(numeroCuenta);
+                        List<Transaccion> historial = bancoService.obtenerHistorial(cuentaActual);
 
                         if (historial.isEmpty()){
                             System.out.println("No hay transacciones registradas.");
@@ -109,7 +120,34 @@ public class Main {
                             }
                         }
                         break;
+                    case 6:
+                        System.out.print("Ingrese número de cuenta: ");
+                        String nuevaCuenta = entrada.next();
 
+                        System.out.print("Ingrese saldo inicial: ");
+                        int saldo = entrada.nextInt();
+
+                        bancoService.crearCuenta(nuevaCuenta, saldo);
+                        System.out.println("Cuenta creada con éxito.");
+                        break;
+                    case 7:
+                        System.out.print("Ingrese número de cuenta: ");
+                        String nueva = entrada.next();
+
+                        if (!bancoService.existeCuenta(nueva)){
+                            System.out.println("ERROR: La cuenta no existe.");
+                            break;
+                        }
+
+                        cuentaActual = nueva;
+                        System.out.println("Cuenta cambiada con éxito.");
+                        break;
+                    case 8:
+                        System.out.println("==== CUENTAS DISPONIBLES ====");
+                        for (String c : bancoService.obtenerCuentas()){
+                            System.out.println(c);
+                        }
+                        break;
                     case 0:
                         System.out.println("Gracias por usar el sistema.");
                         break;
