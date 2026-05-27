@@ -1,5 +1,7 @@
 package com.luis.banco.model;
 
+import com.luis.banco.exception.SaldoInsuficienteException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +52,21 @@ public class Cuenta {
 
         saldo += monto;
         historial.add(new Transaccion(TipoTransaccion.DEPOSITO,monto));
+    }
+
+    // Registra una transferencia enviada hacia otra cuenta
+    public void registrarTransferenciaEnviada(int monto, String cuentaDestino){
+        if (monto > saldo){
+            throw new SaldoInsuficienteException();
+        }
+        saldo -= monto;
+        historial.add(new Transaccion(TipoTransaccion.TRANSFERENCIA_ENVIADA, monto, cuentaDestino));
+    }
+
+    // Registra una transferencia recibida desde otra cuenta
+    public void registrarTransferenciaRecibida(int monto, String cuentaOrigen){
+        saldo += monto;
+        historial.add(new Transaccion(TipoTransaccion.TRANSFERENCIA_RECIBIDA, monto, cuentaOrigen));
     }
 
     // Agrega una transacción al historial de la cuenta.

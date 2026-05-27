@@ -1,6 +1,7 @@
 package com.luis.banco.service;
 
 import com.luis.banco.model.*;
+import com.luis.banco.exception.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +26,8 @@ public class BancoService {
     // Crea una nueva cuenta si el número no existe previamente.
     public void crearCuenta(String numeroCuenta, int saldoInicial){
         if (cuentas.containsKey(numeroCuenta)){
-            throw new IllegalArgumentException("La cuenta ya existe");
+            throw new CuentaYaExisteException(numeroCuenta);
         }
-
         cuentas.put(numeroCuenta, new Cuenta(saldoInicial));
     }
 
@@ -44,10 +44,13 @@ public class BancoService {
 
         Cuenta cuenta = obtenerCuenta(numeroCuenta);
 
+        if(monto > cuenta.getSaldo()){
+            throw new SaldoInsuficienteException();
+        }
         ResultadoRetiro resultado = cajero.retirar(monto);
 
         if (!resultado.esExitoso()) {
-            return resultado;
+            throw new CajeroSinBilletesException();
         }
 
         cuenta.debitar(monto);
@@ -68,8 +71,8 @@ public class BancoService {
         Cuenta cuentaOrigen = obtenerCuenta(origen);
         Cuenta cuentaDestino = obtenerCuenta(destino);
 
-        cuentaOrigen.debitar(monto);
-        cuentaDestino.depositar(monto);
+        cuentaOrigen.registrarTransferenciaEnviada(monto, destino);
+        cuentaDestino.registrarTransferenciaRecibida(monto, origen);
     }
 
     // Busca una cuenta por su número.
@@ -78,9 +81,8 @@ public class BancoService {
         Cuenta cuenta = cuentas.get(numeroCuenta);
 
         if (cuenta == null){
-            throw new IllegalArgumentException("Cuenta no encontrada");
+            throw new CuentaNoEncontradaException(numeroCuenta);
         }
-
         return cuenta;
     }
 

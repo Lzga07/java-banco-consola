@@ -10,6 +10,7 @@ public class Transaccion {
     private final TipoTransaccion tipo;
     private final int monto;
     private final LocalDateTime fecha;
+    private final String cuentaRelacionada;
 
     // Crea una nueva transacción con el tipo y monto indicados.
     // La fecha se asigna automáticamente al momento de creación.
@@ -25,6 +26,22 @@ public class Transaccion {
         this.tipo = tipo;
         this.monto = monto;
         this.fecha = LocalDateTime.now();
+        this.cuentaRelacionada = null;
+    }
+
+    public Transaccion(TipoTransaccion tipo, int monto, String cuentaRelacionada){
+        if (tipo == null) {
+            throw new IllegalArgumentException("El tipo de transacción no puede ser nulo");
+        }
+
+        if (monto <= 0) {
+            throw new IllegalArgumentException("El monto debe ser mayor a cero");
+        }
+
+        this.tipo = tipo;
+        this.monto = monto;
+        this.fecha = LocalDateTime.now();
+        this.cuentaRelacionada = cuentaRelacionada;
     }
 
     // Devuelve el tipo de transacción.
@@ -47,6 +64,10 @@ public class Transaccion {
     @Override
     public String toString(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        return "[" + fecha.format(formatter) + "] " + tipo + " -> $" + monto;
+        String base = "[" + fecha.format(formatter) + "] " + tipo + " -> $" + monto;
+        if (cuentaRelacionada != null) {
+            base += " (cuenta: " + cuentaRelacionada + ")";
+        }
+        return base;
     }
 }

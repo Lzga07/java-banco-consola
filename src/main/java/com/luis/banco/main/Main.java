@@ -1,5 +1,6 @@
 package com.luis.banco.main;
 
+import java.util.InputMismatchException;
 import com.luis.banco.model.Cajero;
 import com.luis.banco.model.Cuenta;
 import com.luis.banco.service.BancoService;
@@ -48,11 +49,11 @@ public class Main {
 
             try {
 
-                //Se evalúa la opción seleccionada por el ususario
-                switch (opcion){
+                //Se evalúa la opción seleccionada por el usuario
+                switch (opcion) {
 
                     case 1:
-                        //Comsulta de saldo, encargado por BancoService
+                        //Consulta de saldo, encargado por BancoService
                         System.out.println("Saldo actual: $" + bancoService.verSaldo(cuentaActual));
                         break;
 
@@ -63,15 +64,10 @@ public class Main {
                         //Se ejecuta la operación de retiro a través del servicio
                         ResultadoRetiro resultado = bancoService.retirar(cuentaActual, monto);
 
-                        if (!resultado.esExitoso()) {
-                            System.out.println("ERROR: " + resultado.getMensaje());
-                            break;
-                        }
-
                         System.out.println("Retiro exitoso.");
                         System.out.println("Se entregan: ");
 
-                        // Se muestran solo los billetes que efectivamente se entragan
+                        // Se muestran solo los billetes que efectivamente se entregan
                         //Evita imprimir valores en cero.
                         if (resultado.getBilletesMil() > 0)
                             System.out.println(resultado.getBilletesMil() + " billetes de 1000");
@@ -107,7 +103,7 @@ public class Main {
                         // Se obtiene la lista desde el BancoService. Mantiene encapsulamiento
                         List<Transaccion> historial = bancoService.obtenerHistorial(cuentaActual);
 
-                        if (historial.isEmpty()){
+                        if (historial.isEmpty()) {
                             System.out.println("No hay transacciones registradas.");
                         } else {
                             System.out.println("=== Historial de Transacciones ===");
@@ -115,7 +111,7 @@ public class Main {
                             //Se recorre la lista
                             // Cada Transaccion utiliza su método toString()
                             // para mostrar la información formateada.
-                            for (Transaccion t : historial){
+                            for (Transaccion t : historial) {
                                 System.out.println(t);
                             }
                         }
@@ -134,7 +130,7 @@ public class Main {
                         System.out.print("Ingrese número de cuenta: ");
                         String nueva = entrada.next();
 
-                        if (!bancoService.existeCuenta(nueva)){
+                        if (!bancoService.existeCuenta(nueva)) {
                             System.out.println("ERROR: La cuenta no existe.");
                             break;
                         }
@@ -144,7 +140,7 @@ public class Main {
                         break;
                     case 8:
                         System.out.println("==== CUENTAS DISPONIBLES ====");
-                        for (String c : bancoService.obtenerCuentas()){
+                        for (String c : bancoService.obtenerCuentas()) {
                             System.out.println(c);
                         }
                         break;
@@ -156,10 +152,14 @@ public class Main {
                         System.out.println("Opción inválida.");
                 }
 
-            } catch (Exception e){
+            } catch (InputMismatchException e) {
+                System.out.println("Error: Ingrese un número válido.");
+                entrada.nextLine();
+            } catch (Exception e) {
                 //Manejo global de excepciones.
                 System.out.println("ERROR: " + e.getMessage());
             }
+
         } while (opcion != 0);
 
         // Se cierra el scanner para liberar recursos del sistema
