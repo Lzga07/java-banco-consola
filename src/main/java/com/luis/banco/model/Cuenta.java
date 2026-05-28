@@ -10,15 +10,25 @@ import java.util.List;
 public class Cuenta {
 
     private double saldo;
+    private final String titular;
+    private final String pin;
 
     private List<Transaccion> historial;
 
     // Crea una cuenta con un saldo inicial.
     // No se permite un saldo inicial negativo.
-    public Cuenta(int saldoInicial){
+    public Cuenta(String titular, String pin, int saldoInicial){
         if(saldoInicial < 0){
             throw new IllegalArgumentException("El saldo inicial no puede ser negativo.");
         }
+        if (titular == null || titular.isBlank()) {
+            throw new IllegalArgumentException("El titular no puede estar vacío");
+        }
+        if (pin == null || pin.isBlank()) {
+            throw new IllegalArgumentException("El PIN no puede estar vacío");
+        }
+        this.titular = titular;
+        this.pin = pin;
         this.saldo = saldoInicial;
         this.historial = new ArrayList<>();
     }
@@ -26,6 +36,14 @@ public class Cuenta {
     // Devuelve el saldo actual de la cuenta.
     public double getSaldo(){
         return saldo;
+    }
+
+    public String getTitular(){
+        return titular;
+    }
+
+    public boolean validarPin(String pinIngresado){
+        return this.pin.equals(pinIngresado);
     }
 
     // Realiza un débito (retiro) del saldo.

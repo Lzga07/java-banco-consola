@@ -24,11 +24,11 @@ public class BancoService {
     }
 
     // Crea una nueva cuenta si el número no existe previamente.
-    public void crearCuenta(String numeroCuenta, int saldoInicial){
+    public void crearCuenta(String numeroCuenta, String titular, String pin, int saldoInicial){
         if (cuentas.containsKey(numeroCuenta)){
             throw new CuentaYaExisteException(numeroCuenta);
         }
-        cuentas.put(numeroCuenta, new Cuenta(saldoInicial));
+        cuentas.put(numeroCuenta, new Cuenta(titular, pin, saldoInicial));
     }
 
     // Devuelve el saldo actual de la cuenta indicada.
@@ -86,8 +86,19 @@ public class BancoService {
         return cuenta;
     }
 
+    public String obtenerTitular(String numeroCuenta){
+        return obtenerCuenta(numeroCuenta).getTitular();
+    }
+
     public Set<String> obtenerCuentas(){
         return cuentas.keySet();
+    }
+
+    public void validarPin(String numeroCuenta, String pin){
+        Cuenta cuenta = obtenerCuenta(numeroCuenta);
+        if (!cuenta.validarPin(pin)) {
+            throw new PinIncorrectoException();
+        }
     }
 
     public boolean existeCuenta(String numeroCuenta){

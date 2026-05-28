@@ -26,7 +26,7 @@ public class Main {
         BancoService bancoService = new BancoService(cajero);
 
         //Creo cuenta para prueba
-        bancoService.crearCuenta("4545", 25000);
+        bancoService.crearCuenta("4545","Luis", "1234", 25000);
         String cuentaActual = "4545";
 
         int opcion;
@@ -120,28 +120,31 @@ public class Main {
                         System.out.print("Ingrese número de cuenta: ");
                         String nuevaCuenta = entrada.next();
 
+                        System.out.print("Ingrese nombre del titular: ");
+                        String titular = entrada.next();
+
+                        System.out.print("Ingrese PIN: ");
+                        String pinNuevo = entrada.next();
+
                         System.out.print("Ingrese saldo inicial: ");
                         int saldo = entrada.nextInt();
 
-                        bancoService.crearCuenta(nuevaCuenta, saldo);
+                        bancoService.crearCuenta(nuevaCuenta, titular, pinNuevo, saldo);
                         System.out.println("Cuenta creada con éxito.");
                         break;
                     case 7:
-                        System.out.print("Ingrese número de cuenta: ");
-                        String nueva = entrada.next();
-
-                        if (!bancoService.existeCuenta(nueva)) {
-                            System.out.println("ERROR: La cuenta no existe.");
-                            break;
+                        try {
+                            String candidata = login(entrada, bancoService);
+                            cuentaActual = candidata;
+                            System.out.println("Sesión iniciada. Bienvenido/a, " + bancoService.obtenerTitular(cuentaActual) + ".");
+                        } catch (Exception e) {
+                            System.out.println("ERROR: " + e.getMessage());
                         }
-
-                        cuentaActual = nueva;
-                        System.out.println("Cuenta cambiada con éxito.");
                         break;
                     case 8:
                         System.out.println("==== CUENTAS DISPONIBLES ====");
                         for (String c : bancoService.obtenerCuentas()) {
-                            System.out.println(c);
+                            System.out.println(c + " | " + bancoService.obtenerTitular(c) + " | Saldo: $" + bancoService.verSaldo(c));
                         }
                         break;
                     case 0:
@@ -164,5 +167,16 @@ public class Main {
 
         // Se cierra el scanner para liberar recursos del sistema
         entrada.close();
+    }
+
+    private static String login(Scanner entrada, BancoService bancoService) {
+        System.out.print("Ingrese número de cuenta: ");
+        String cuenta = entrada.next();
+
+        System.out.print("Ingrese PIN: ");
+        String pin = entrada.next();
+
+        bancoService.validarPin(cuenta, pin);
+        return cuenta;
     }
 }
